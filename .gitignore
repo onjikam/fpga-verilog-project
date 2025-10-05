@@ -1,0 +1,9 @@
+.apio/
+build/
+out/
+*.bin
+*.asc
+*.json
+*.rpt
+*.log
+*.vcd
