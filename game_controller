@@ -1,0 +1,27 @@
+`timescale 1ns/1ps
+`default_nettype none
+
+// Parallel-in / serial-out shift register (NES-style)
+// Ports match the provided testbench: top(clock, latch, d_in, data)
+module top (
+    input  wire        clock,   // shift on rising edge
+    input  wire        latch,   // capture on rising edge
+    input  wire [7:0]  d_in,    // parallel input (buttons)
+    output reg         data     // serial data output (MSB-first)
+);
+    // Holds the captured 8-bit snapshot
+    reg [7:0] shift_reg = 8'h00;
+
+    // On latch rising edge: capture all inputs and present the MSB immediately
+    always @(posedge latch) begin
+        shift_reg <= d_in;
+        data      <= d_in[7];
+    end
+
+    // On each clock rising edge: shift left and present the next bit
+    // We output the *next* MSB (bit 6) while shifting the register.
+    always @(posedge clock) begin
+        data      <= shift_reg[6];
+        shift_reg <= {shift_reg[6:0], 1'b0};
+    end
+endmodule
